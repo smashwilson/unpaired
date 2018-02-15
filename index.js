@@ -15,6 +15,22 @@ class Registry {
     return call
   }
 
+  wrap (promise, signature = null) {
+    const stack = new Error().stack.replace(/\A[^\n]\n/, '')
+    const call = this.begin(signature, stack)
+    promise.then(
+      value => {
+        call.finish()
+        return value
+      },
+      err => {
+        call.finish()
+        return Promise.reject(err)
+      }
+    )
+    return promise
+  }
+
   size () {
     return this.pending.size
   }
@@ -32,6 +48,4 @@ class Registry {
   }
 }
 
-module.exports = {
-  Registry
-}
+module.exports = {Registry}

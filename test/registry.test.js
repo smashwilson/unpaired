@@ -55,4 +55,19 @@ describe('Registry', function () {
     ]
     assert.equal(r.report(), lines.join(''))
   })
+
+  it('wraps a Promise with an explicit signature', async function () {
+    let f = () => {}
+    const p = new Promise(resolve => { f = resolve })
+
+    r.wrap(p, 'A#method0')
+
+    assert.equal(r.size(), 1)
+    assert.equal(r.report(), 'x1 A#method0\n')
+
+    f()
+    await p
+
+    assert.equal(r.size(), 0)
+  })
 })
