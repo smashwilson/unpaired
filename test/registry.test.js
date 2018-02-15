@@ -70,4 +70,35 @@ describe('Registry', function () {
 
     assert.equal(r.size(), 0)
   })
+
+  it('wraps a Promise and infer a signature from the calling function', async function () {
+    class A {
+      constructor () {
+        this.f = () => {}
+      }
+
+      method0 () {
+        return this.method1()
+      }
+
+      method1 () {
+        return r.wrap(new Promise(resolve => { this.f = resolve }))
+      }
+
+      resolveIt () {
+        this.f()
+      }
+    }
+
+    const a = new A()
+    const p = a.method0()
+
+    assert.equal(r.size(), 1)
+    assert.match(r.report(), /^x1 A.method1 \(.*?test\/registry\.test\.js:\d+:\d+\)\n$/)
+
+    a.resolveIt()
+    await p
+
+    assert.equal(r.size(), 0)
+  })
 })

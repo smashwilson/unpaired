@@ -16,7 +16,12 @@ class Registry {
   }
 
   wrap (promise, signature = null) {
-    const stack = new Error().stack.replace(/\A[^\n]\n/, '')
+    const stack = new Error().stack.replace(/^[^\n]*\n/, '')
+    if (!signature) {
+      const frames = stack.split(/\n/)
+      const m = /^\s*at\s+(.+)/.exec(frames[1])
+      signature = m ? m[1] : '<unknown>'
+    }
     const call = this.begin(signature, stack)
     promise.then(
       value => {
