@@ -1,5 +1,5 @@
 {
-  "name": "unpaired",
+  "name": "@smashwilson/unpaired",
   "version": "1.0.0",
   "description": "Identify asynchronous functions that have not yet returned",
   "main": "index.js",
