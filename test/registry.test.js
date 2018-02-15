@@ -6,7 +6,7 @@ const {assert} = chai
 const {Registry} = require('..')
 
 describe('Registry', function () {
-  const STACK = Symbol('stack')
+  const STACK = 'the-stack'
   let r
 
   beforeEach(function () {
@@ -36,5 +36,23 @@ describe('Registry', function () {
     assert.equal(r.size(), 0)
   })
 
-  it('reports the calls that have been started, but not completed')
+  it('reports the calls that have been started, but not completed', function () {
+    const call0 = r.begin('A#method0', STACK)
+    const call1 = r.begin('A#method0', STACK)
+    const call2 = r.begin('A#method0', STACK)
+    const call3 = r.begin('A#method1', STACK)
+    const call4 = r.begin('B#method2', STACK)
+    const call5 = r.begin('B#method2', STACK)
+    const call6 = r.begin('C#method3', STACK)
+
+    call2.finish()
+    call6.finish()
+
+    const lines = [
+      'x2 A#method0\n',
+      'x2 B#method2\n',
+      'x1 A#method1\n'
+    ]
+    assert.equal(r.report(), lines.join(''))
+  })
 })
